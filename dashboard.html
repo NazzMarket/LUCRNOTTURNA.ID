@@ -1,0 +1,805 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07100b">
+
+<title>LUCE NOTTURNA | Authenticity Check</title>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap');
+
+:root {
+    --green: #9dff54;
+    --green2: #42d879;
+    --dark: #080d09;
+    --panel: #101a13;
+    --white: #f3fff3;
+    --muted: #839184;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--dark);
+    color: var(--white);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* BACKGROUND */
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(circle at 10% 15%, #75ff4518, transparent 30%),
+        radial-gradient(circle at 90% 80%, #00ff7a12, transparent 35%);
+    pointer-events: none;
+    z-index: -2;
+}
+
+.grid-bg {
+    position: fixed;
+    inset: 0;
+    background-image:
+        linear-gradient(#ffffff08 1px, transparent 1px),
+        linear-gradient(90deg,#ffffff08 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: linear-gradient(to bottom, black, transparent);
+    z-index: -1;
+}
+
+/* NAVBAR */
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px 7%;
+    border-bottom: 1px solid #ffffff15;
+    backdrop-filter: blur(12px);
+}
+
+.brand {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 17px;
+    letter-spacing: 2px;
+    font-weight: 800;
+}
+
+.brand span {
+    color: var(--green);
+}
+
+.nav-status {
+    color: var(--green);
+    font-size: 12px;
+    letter-spacing: 2px;
+}
+
+.dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    margin-right: 7px;
+    box-shadow: 0 0 12px var(--green);
+    animation: blink 1.5s infinite;
+}
+
+/* MAIN */
+
+.container {
+    width: 100%;
+    max-width: 520px;
+    margin: auto;
+    padding: 45px 20px 30px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    animation: fadeDown .8s ease;
+}
+
+.tag {
+    display: inline-block;
+    border: 1px solid #9dff5445;
+    color: var(--green);
+    padding: 6px 13px;
+    font-size: 11px;
+    letter-spacing: 3px;
+    margin-bottom: 18px;
+    border-radius: 30px;
+}
+
+.header h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(23px, 6vw, 34px);
+    letter-spacing: 2px;
+    line-height: 1.4;
+}
+
+.header h1 span {
+    color: var(--green);
+    text-shadow: 0 0 20px #9dff5450;
+}
+
+.header p {
+    color: var(--muted);
+    margin-top: 12px;
+    font-size: 16px;
+}
+
+/* SCANNER CARD */
+
+.scanner-card {
+    position: relative;
+    padding: 22px;
+    background: linear-gradient(145deg,#142219,#0a100c);
+    border: 1px solid #9dff5435;
+    border-radius: 20px;
+    box-shadow: 0 15px 50px #0008,
+                0 0 30px #9dff5409;
+    overflow: hidden;
+    animation: fadeUp .9s ease;
+}
+
+.scanner-card::before {
+    content: "";
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    background: #9dff5410;
+    filter: blur(70px);
+    top: -80px;
+    right: -70px;
+    pointer-events: none;
+}
+
+.card-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.card-title h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+
+.card-title span {
+    color: var(--green);
+    font-size: 12px;
+}
+
+/* CAMERA */
+
+.camera-box {
+    position: relative;
+    background: #050806;
+    border: 1px solid #9dff5445;
+    border-radius: 14px;
+    padding: 12px;
+    overflow: hidden;
+}
+
+#reader {
+    width: 100%;
+    min-height: 250px;
+    border: none !important;
+    color: white !important;
+}
+
+#reader video {
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+#reader__scan_region {
+    background: transparent !important;
+}
+
+#reader__dashboard {
+    color: white !important;
+}
+
+#reader__dashboard button,
+#reader__dashboard select {
+    background: var(--green) !important;
+    color: #07100b !important;
+    border: none !important;
+    border-radius: 7px !important;
+    padding: 8px !important;
+    font-weight: bold;
+}
+
+#reader a {
+    color: var(--green) !important;
+}
+
+/* LASER */
+
+.laser {
+    position: absolute;
+    z-index: 5;
+    left: 12%;
+    right: 12%;
+    height: 2px;
+    background: var(--green);
+    box-shadow: 0 0 10px var(--green),
+                0 0 25px var(--green);
+    top: 15%;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.camera-box.scanning .laser {
+    opacity: 1;
+    animation: laser 2s ease-in-out infinite;
+}
+
+.scan-hint {
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+    margin: 15px 0;
+}
+
+/* BUTTON */
+
+.btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 9px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .3s;
+}
+
+.btn-green {
+    background: var(--green);
+    color: #07100b;
+    box-shadow: 0 0 15px #9dff5425;
+}
+
+.btn-green:hover {
+    background: white;
+    box-shadow: 0 0 25px #9dff5480;
+    transform: translateY(-2px);
+}
+
+.btn-dark {
+    background: #19251c;
+    border: 1px solid #9dff5440;
+    color: var(--green);
+    margin-top: 10px;
+}
+
+.btn-dark:hover {
+    background: #263c2b;
+}
+
+.btn:active {
+    transform: scale(.97);
+}
+
+/* MANUAL INPUT */
+
+.manual {
+    margin-top: 23px;
+    border-top: 1px solid #ffffff15;
+    padding-top: 20px;
+}
+
+.manual label {
+    font-size: 14px;
+    color: var(--green);
+}
+
+.manual input {
+    width: 100%;
+    padding: 13px;
+    background: #080e09;
+    color: white;
+    border: 1px solid #354d39;
+    border-radius: 8px;
+    margin: 10px 0;
+    outline: none;
+    font-family: inherit;
+}
+
+.manual input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 12px #9dff5420;
+}
+
+/* RESULT */
+
+.result {
+    display: none;
+    margin-top: 22px;
+    padding: 22px 15px;
+    text-align: center;
+    border-radius: 15px;
+    animation: resultIn .5s ease;
+}
+
+.result.success {
+    display: block;
+    background: #0d2819;
+    border: 1px solid #36e989;
+    box-shadow: 0 0 25px #36e98920;
+}
+
+.result.danger {
+    display: block;
+    background: #291313;
+    border: 1px solid #ff4848;
+    box-shadow: 0 0 25px #ff484820;
+}
+
+.result-icon {
+    font-size: 45px;
+    margin-bottom: 10px;
+}
+
+.result h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+.success h2 {
+    color: #43f59a;
+}
+
+.danger h2 {
+    color: #ff5555;
+}
+
+.result p {
+    color: #c0cfc3;
+    font-size: 15px;
+}
+
+.result-info {
+    font-size: 13px;
+    color: #a6b4a8;
+    margin-top: 12px;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+}
+
+.result .btn {
+    margin-top: 18px;
+}
+
+/* FOOTER */
+
+.footer {
+    text-align: center;
+    padding: 30px 10px;
+    color: #647268;
+    font-size: 12px;
+    letter-spacing: 2px;
+}
+
+.footer span {
+    color: var(--green);
+}
+
+/* ANIMATION */
+
+@keyframes laser {
+    0% {top: 15%;}
+    50% {top: 85%;}
+    100% {top: 15%;}
+}
+
+@keyframes blink {
+    50% {opacity: .3;}
+}
+
+@keyframes fadeDown {
+    from {opacity: 0; transform: translateY(-20px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+@keyframes fadeUp {
+    from {opacity: 0; transform: translateY(20px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+@keyframes resultIn {
+    from {opacity: 0; transform: scale(.92);}
+    to {opacity: 1; transform: scale(1);}
+}
+
+@media(max-width:380px) {
+    nav {padding: 18px 5%;}
+    .brand {font-size: 13px;}
+    .container {padding: 35px 13px;}
+    .scanner-card {padding: 15px;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="grid-bg"></div>
+
+<nav>
+    <div class="brand">LUCE <span>NOTTURNA</span></div>
+    <div class="nav-status">
+        <span class="dot"></span> SYSTEM ONLINE
+    </div>
+</nav>
+
+<main class="container">
+
+    <div class="header">
+        <div class="tag">OFFICIAL PRODUCT SECURITY</div>
+
+        <h1>AUTHENTICITY<br>
+        <span>VERIFICATION</span></h1>
+
+        <p>Verify your LUCE NOTTURNA product.</p>
+    </div>
+
+    <div class="scanner-card">
+
+        <div class="card-title">
+            <h3>QR CODE SCANNER</h3>
+            <span>● READY TO SCAN</span>
+        </div>
+
+        <div class="camera-box" id="cameraBox">
+
+            <div class="laser"></div>
+
+            <div id="reader"></div>
+
+        </div>
+
+        <p class="scan-hint" id="scanHint">
+            Point your camera at the product QR code.
+        </p>
+
+        <button class="btn btn-green" onclick="startScanner()">
+            START SCANNING
+        </button>
+
+        <button class="btn btn-dark" onclick="stopScanner()">
+            STOP CAMERA
+        </button>
+
+        <div class="manual">
+
+            <label>MANUAL VERIFICATION</label>
+
+            <input
+                type="text"
+                id="manualQR"
+                placeholder="Enter QR code URL..."
+            >
+
+            <button class="btn btn-green" onclick="manualCheck()">
+                VERIFY CODE
+            </button>
+
+        </div>
+
+        <div class="result" id="result">
+
+            <div class="result-icon" id="resultIcon"></div>
+
+            <h2 id="resultTitle"></h2>
+
+            <p id="resultMessage"></p>
+
+            <div class="result-info" id="resultInfo"></div>
+
+            <button
+                class="btn btn-green"
+                id="openBtn"
+                style="display:none"
+                onclick="openOfficial()">
+                OPEN OFFICIAL WEBSITE
+            </button>
+
+            <button
+                class="btn btn-dark"
+                onclick="resetResult()">
+                SCAN AGAIN
+            </button>
+
+        </div>
+
+    </div>
+
+</main>
+
+<div class="footer">
+    LUCE NOTTURNA <span>®</span><br><br>
+    AUTHENTICITY PROTECTION SYSTEM © 2026
+</div>
+
+<script>
+
+// ==================================
+// OFFICIAL QR DATABASE
+// ==================================
+
+const trustedQRs = {
+
+    "https://www.canvaqr.com/RGVwKYATy-": {
+        name: "LUCE NOTTURNA",
+        serial: "LCN-ORIGINAL-001",
+        website: "https://www.canvaqr.com/RGVwKYATy-"
+    }
+
+};
+
+// ==================================
+// SCANNER SETUP
+// ==================================
+
+const scanner = new Html5Qrcode("reader");
+
+let scanning = false;
+let processing = false;
+let verifiedURL = null;
+
+// ==================================
+// START CAMERA
+// ==================================
+
+async function startScanner() {
+
+    if (scanning) return;
+
+    if (typeof Html5Qrcode === "undefined") {
+        alert("Scanner library gagal dimuat. Periksa koneksi internet.");
+        return;
+    }
+
+    try {
+
+        document.getElementById("scanHint").innerText =
+            "Camera starting...";
+
+        await scanner.start(
+            { facingMode: "environment" },
+            {
+                fps: 10,
+                qrbox: {
+                    width: 220,
+                    height: 220
+                }
+            },
+            onScanSuccess,
+            () => {}
+        );
+
+        scanning = true;
+
+        document.getElementById("cameraBox")
+            .classList.add("scanning");
+
+        document.getElementById("scanHint").innerText =
+            "Scanning... Point camera at QR code.";
+
+    } catch (error) {
+
+        document.getElementById("scanHint").innerText =
+            "Camera unavailable.";
+
+        alert(
+            "Tidak dapat membuka kamera. Izinkan akses kamera dan gunakan HTTPS atau localhost."
+        );
+
+    }
+
+}
+
+// ==================================
+// STOP CAMERA
+// ==================================
+
+async function stopScanner() {
+
+    if (!scanning) return;
+
+    try {
+
+        await scanner.stop();
+
+        scanning = false;
+
+        document.getElementById("cameraBox")
+            .classList.remove("scanning");
+
+        document.getElementById("scanHint").innerText =
+            "Camera stopped.";
+
+    } catch (error) {
+
+        console.log(error);
+
+    }
+
+}
+
+// ==================================
+// SCAN SUCCESS
+// ==================================
+
+async function onScanSuccess(decodedText) {
+
+    if (processing) return;
+
+    processing = true;
+
+    await stopScanner();
+
+    verifyQR(decodedText);
+
+}
+
+// ==================================
+// VERIFY QR
+// ==================================
+
+function verifyQR(qrText) {
+
+    const result = document.getElementById("result");
+
+    const title = document.getElementById("resultTitle");
+
+    const message = document.getElementById("resultMessage");
+
+    const info = document.getElementById("resultInfo");
+
+    const icon = document.getElementById("resultIcon");
+
+    const openBtn = document.getElementById("openBtn");
+
+    const registered = trustedQRs[qrText];
+
+    result.className = "result";
+
+    result.style.display = "block";
+
+    openBtn.style.display = "none";
+
+    verifiedURL = null;
+
+    if (registered) {
+
+        // ORIGINAL PRODUCT
+
+        result.classList.add("success");
+
+        icon.innerHTML = "✓";
+
+        title.innerHTML = "AUTHENTIC";
+
+        message.innerHTML =
+            "Congratulations! Your product is registered as an official LUCE NOTTURNA QR code.";
+
+        info.innerHTML =
+            "BRAND: " + registered.name +
+            "<br>SERIAL NUMBER: " + registered.serial +
+            "<br>VERIFICATION: AUTHENTIC";
+
+        verifiedURL = registered.website;
+
+        openBtn.style.display = "block";
+
+    } else {
+
+        // FAKE / UNREGISTERED QR
+
+        result.classList.add("danger");
+
+        icon.innerHTML = "✕";
+
+        title.innerHTML = "FAKE / NOT VERIFIED";
+
+        message.innerHTML =
+            "This QR code is not registered in the LUCE NOTTURNA database.";
+
+        info.innerHTML =
+            "BRAND: UNKNOWN" +
+            "<br>VERIFICATION: FAILED" +
+            "<br>WARNING: QR CODE NOT REGISTERED";
+
+    }
+
+    document.getElementById("scanHint").innerText =
+        "Verification process completed.";
+
+}
+
+// ==================================
+// MANUAL CHECK
+// ==================================
+
+function manualCheck() {
+
+    const value = document
+        .getElementById("manualQR")
+        .value.trim();
+
+    if (!value) {
+
+        alert("Please enter a QR code!");
+
+        return;
+
+    }
+
+    verifyQR(value);
+
+}
+
+// ==================================
+// OPEN VERIFIED URL
+// ==================================
+
+function openOfficial() {
+
+    if (verifiedURL) {
+
+        window.open(
+            verifiedURL,
+            "_blank",
+            "noopener,noreferrer"
+        );
+
+    }
+
+}
+
+// ==================================
+// RESET
+// ==================================
+
+function resetResult() {
+
+    document.getElementById("result").style.display = "none";
+
+    document.getElementById("manualQR").value = "";
+
+    document.getElementById("scanHint").innerText =
+        "Ready to scan another QR code.";
+
+    processing = false;
+
+    startScanner();
+
+}
+
+</script>
+
+</body>
+</html>
